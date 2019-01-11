@@ -1,7 +1,7 @@
 import random
 vals = ["tendrils","darkrit","lotus"]
-decksize = 10
-cardmax = 10
+decksize = 100
+cardmax = 100#remove these into a config file
 
 def choiceSort(i):
     return (i["w"]+1)/(i["c"]+1)
@@ -28,7 +28,7 @@ def initGamestate():
     ret["storm"] = 0
     ret["life"] = 0
     ret["health"] = 0
-    ret["hand"] = 0
+    ret["hand"] = 7
     ret["land"] = 1
     ret["grave"] = 0
     ret["riteflame"] = 0
@@ -48,21 +48,31 @@ def sim(deck, gamestate, node): #recursive function for a round of monte carlo s
             if deck[i]:
                 new = newnode()
                 new["name"] = i
-                node["children"].append(node)
+                node["children"].append(new)
         if not len(node["children"]):
             return 0
     c = 1
     node["children"].sort(key=choiceSort)
     v = random.random() #number to pick a card at random
     c = 1 #keep track of the chance a card hasn't been played yet
-    d = sum(deck) #count of cards in the deck for calculations
+    print(deck)
+    d = sum(deck.values()) #count of cards in the deck for calculations
     choice = -1
     while v > 0:
         choice += 1
-        notc = 1
+        notc = 1.0
         for i in range(0,gamestate["hand"]):
             if notc:
-                notc *= (d - node["children"][choice])
+                print(node["children"][choice])
+                print(d,deck[node["children"][choice]["name"]],i)
+                notc *= (d - deck[node["children"][choice]["name"]] - i)
+                notc /= (d - i)
+        print(notc)
+        chance = 1 - notc
+        chance *= c
+        print(chance)
+        c -= chance
+        v -= chance
 
 def fitness(deck, iters): #calculates fitness for the deck using monte carlo function
     tree = newnode()

@@ -5,7 +5,7 @@ import Queue
 tocalc = Queue.Queue()
 popedit = Queue.Queue(maxsize=1)
 pop = []
-popsize = 20
+popsize = 20 #TODO: remove these values to a config file
 
 def worker():
     while 1:
